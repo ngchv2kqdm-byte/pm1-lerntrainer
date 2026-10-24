@@ -1,1 +1,1241 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#020617"><title>PM 1 Lerntrainer</title><style>*{box-sizing:border-box}body{margin:0;background:#020617;color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{padding:max(12px,env(safe-area-inset-top)) 10px calc(84px + env(safe-area-inset-bottom));min-height:100vh}.box{border:1px solid #1e293b;border-radius:22px;background:#0f172a;padding:18px;margin-bottom:12px}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.tabs button,.nav button{border:0;border-radius:12px;min-height:50px;background:#1e293b;color:white;font-weight:700}.tabs .on{background:#22d3ee;color:#042f3e}.card{min-height:55vh;display:flex;justify-content:center;flex-direction:column}.card h2{font-size:clamp(26px,8vw,40px)}.muted{color:#94a3b8}.nav{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#020617ee;padding:8px 8px max(8px,env(safe-area-inset-bottom))}.nav .primary{background:#22d3ee;color:#042f3e}</style></head><body><main><section class="box"><small style="color:#22d3ee;font-weight:800">HRL PRÜFUNGSTRAINER</small><h1>PM 1 Lerntrainer</h1><p class="muted">Mobile iPhone-Version</p></section><nav class="box tabs"><button class="on">Karten</button><button>Quiz</button><button>Risiken</button><button>Üben</button></nav><section id="card" class="box card" onclick="flip()"><p class="muted" id="label">FRAGE</p><h2 id="text">Was kennzeichnet ein Projekt?</h2><p class="muted">Tippen zum Umdrehen</p></section></main><nav class="nav"><button onclick="prev()">←</button><button class="primary" onclick="flip()">↻</button><button onclick="random()">⤨</button><button onclick="next()">→</button></nav><script>const cards=[['Was kennzeichnet ein Projekt?','Ein Projekt ist zeitlich begrenzt, einmalig, neuartig, bedeutend, ressourcenbegrenzt und komplex.'],['Risiko versus Problem?','Ein Risiko ist ein mögliches zukünftiges Ereignis; ein Problem ist bereits eingetreten.'],['Welche Grössen umfasst das magische Dreieck?','Leistung, Zeit und Budget.'],['Warum Scope abgrenzen?','Eine klare Abgrenzung verhindert Scope Creep und fokussiert auf die Zielerreichung.']];let i=0,f=false;function draw(){label.textContent=f?'ANTWORT':'FRAGE';text.textContent=cards[i][f?1:0]}function flip(){f=!f;draw()}function next(){i=Math.min(cards.length-1,i+1);f=false;draw()}function prev(){i=Math.max(0,i-1);f=false;draw()}function random(){i=Math.floor(Math.random()*cards.length);f=false;draw()}draw();</script></body></html>
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#020617">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PM1 Trainer">
+
+  <title>PM 1 Lerntrainer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #020617;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding:
+        max(10px, env(safe-area-inset-top))
+        10px
+        calc(84px + env(safe-area-inset-bottom));
+    }
+
+    .box {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 16px;
+      border: 1px solid #1e293b;
+      border-radius: 22px;
+      background: #0f172a;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, #111827, #083344);
+    }
+
+    .hero-label {
+      color: #22d3ee;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    h1 {
+      margin: 5px 0;
+      font-size: clamp(30px, 9vw, 48px);
+    }
+
+    h2 {
+      line-height: 1.2;
+    }
+
+    .muted {
+      color: #94a3b8;
+    }
+
+    .badge {
+      display: inline-block;
+      width: max-content;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #164e63;
+      color: #a5f3fc;
+      font-size: 12px;
+    }
+
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .reset-button {
+      border: 0;
+      background: transparent;
+      color: #94a3b8;
+    }
+
+    .track {
+      height: 8px;
+      margin: 13px 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #1e293b;
+    }
+
+    .bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #22d3ee, #a78bfa, #34d399);
+      transition: width 0.25s ease;
+    }
+
+    .progress-values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .progress-values b {
+      font-size: 20px;
+    }
+
+    .tabs {
+      position: sticky;
+      top: max(4px, env(safe-area-inset-top));
+      z-index: 5;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+      margin-bottom: 12px;
+      padding: 5px;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      background: #0f172a;
+    }
+
+    .tabs button {
+      min-width: 0;
+      height: 50px;
+      padding: 5px;
+      border: 0;
+      border-radius: 12px;
+      background: #1e293b;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tabs button.active {
+      background: #22d3ee;
+      color: #042f3e;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(100px, 1fr);
+      gap: 7px;
+    }
+
+    .filters input,
+    .filters select {
+      min-width: 0;
+      height: 48px;
+      padding: 10px;
+      border: 1px solid #334155;
+      border-radius: 13px;
+      background: #020617;
+      color: #ffffff;
+    }
+
+    .card {
+      min-height: 53vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .card h2 {
+      font-size: clamp(27px, 7vw, 42px);
+    }
+
+    .counter {
+      margin-top: 20px;
+      color: #94a3b8;
+    }
+
+    .answers,
+    .tiles {
+      display: grid;
+      gap: 9px;
+    }
+
+    .answer,
+    .tile,
+    .chip,
+    .drop,
+    .action {
+      padding: 14px;
+      border: 1px solid #334155;
+      border-radius: 15px;
+      background: #020617;
+      color: #ffffff;
+      text-align: left;
+    }
+
+    .answer {
+      width: 100%;
+    }
+
+    .answer.correct {
+      border-color: #34d399;
+      background: #064e3b;
+    }
+
+    .answer.wrong {
+      border-color: #fb7185;
+      background: #4c0519;
+    }
+
+    .subnav {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .subnav button {
+      flex: none;
+      padding: 11px;
+      border: 1px solid #334155;
+      border-radius: 13px;
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .subnav button.active {
+      background: #34d399;
+      color: #022c22;
+    }
+
+    .tiles {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tile {
+      min-height: 125px;
+    }
+
+    .tile.open {
+      border-color: #34d399;
+      background: #052e2b;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 14px 0;
+    }
+
+    .chip.selected {
+      border-color: #fbbf24;
+      background: #451a03;
+    }
+
+    .drops {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .drop {
+      min-height: 145px;
+      border-style: dashed;
+    }
+
+    .drop b {
+      color: #fbbf24;
+    }
+
+    .assigned {
+      margin-top: 8px;
+      padding: 9px;
+      border-radius: 10px;
+      background: #1e293b;
+      font-size: 14px;
+    }
+
+    .exercise-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .action {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .action.primary {
+      background: #fbbf24;
+      color: #1c1917;
+    }
+
+    .feedback {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 13px;
+      font-weight: 700;
+    }
+
+    .feedback.success {
+      background: #064e3b;
+      color: #6ee7b7;
+    }
+
+    .feedback.error {
+      background: #4c0519;
+      color: #fda4af;
+    }
+
+    .bottom-navigation {
+      position: fixed;
+      z-index: 8;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      padding:
+        7px
+        8px
+        max(7px, env(safe-area-inset-bottom));
+      border-top: 1px solid #1e293b;
+      background: rgba(2, 6, 23, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .bottom-navigation button {
+      height: 54px;
+      border: 0;
+      border-radius: 13px;
+      background: #1e293b;
+      color: #ffffff;
+      font-size: 21px;
+    }
+
+    .bottom-navigation button.primary {
+      background: #22d3ee;
+      color: #042f3e;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 390px) {
+      .tiles,
+      .drops {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs button {
+        font-size: 11px;
+      }
+    }
+
+    @media (min-width: 700px) {
+      main {
+        padding: 24px;
+      }
+
+      .bottom-navigation {
+        position: static;
+        max-width: 580px;
+        margin: 12px auto;
+        border: 0;
+        background: transparent;
+      }
+
+      .tiles {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section class="box hero">
+      <div class="hero-label">HRL PRÜFUNGSTRAINER</div>
+      <h1>PM 1 Lerntrainer</h1>
+      <p class="muted">Karten · Quiz · Risiken · Übungen</p>
+    </section>
+
+    <section class="box">
+      <div class="progress-header">
+        <strong>🏆 Lernfortschritt</strong>
+        <button class="reset-button" onclick="resetProgress()">
+          Zurücksetzen
+        </button>
+      </div>
+
+      <div class="track">
+        <div id="progressBar" class="bar"></div>
+      </div>
+
+      <div class="progress-values">
+        <span>
+          <b id="progressCards">0</b><br>
+          Karten
+        </span>
+
+        <span>
+          <b id="progressQuiz">0</b><br>
+          Quiz richtig
+        </span>
+
+        <span>
+          <b id="progressExercises">0</b><br>
+          Übungen
+        </span>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button data-mode="cards" class="active">Karten</button>
+      <button data-mode="quiz">Quiz</button>
+      <button data-mode="risks">Risiken</button>
+      <button data-mode="exercise">Üben</button>
+    </nav>
+
+    <section id="filters" class="box filters">
+      <input id="search" type="search" placeholder="Karten durchsuchen">
+
+      <select id="chapter">
+        <option value="Alle">Alle Kapitel</option>
+      </select>
+    </section>
+
+    <div id="app"></div>
+  </main>
+
+  <nav id="bottomNavigation" class="bottom-navigation">
+    <button aria-label="Vorherige Karte" onclick="go(-1)">←</button>
+    <button
+      class="primary"
+      aria-label="Karte umdrehen"
+      onclick="mainAction()"
+    >
+      ↻
+    </button>
+    <button aria-label="Zufällige Karte" onclick="randomCard()">⤨</button>
+    <button aria-label="Nächste Karte" onclick="go(1)">→</button>
+  </nav>
+
+  <script>
+    const cards = [
+      {
+        id: "PM-01-001",
+        chapter: "1",
+        topic: "Projektmerkmale",
+        question: "Was kennzeichnet ein Projekt?",
+        answer:
+          "Ein Projekt ist zeitlich begrenzt, einmalig, neuartig, bedeutend, ressourcenbegrenzt und komplex."
+      },
+      {
+        id: "PM-02-001",
+        chapter: "2",
+        topic: "Projektorganisation",
+        question: "Was regelt die Projektorganisation?",
+        answer:
+          "Rollen, Aufgaben, Verantwortlichkeiten, Kompetenzen, Entscheidungswege und Schnittstellen."
+      },
+      {
+        id: "PM-03-001",
+        chapter: "3",
+        topic: "Projektauftrag",
+        question: "Welche Funktion hat der Projektauftrag?",
+        answer:
+          "Der Projektauftrag legitimiert das Projekt und hält Ziele, Rahmenbedingungen, Organisation, Ressourcen und Verantwortlichkeiten fest."
+      },
+      {
+        id: "PM-04-001",
+        chapter: "4",
+        topic: "Risikomanagement",
+        question: "Was unterscheidet ein Risiko von einem Problem?",
+        answer:
+          "Ein Risiko ist ein mögliches zukünftiges Ereignis. Ein Problem ist bereits eingetreten."
+      },
+      {
+        id: "PM-05-001",
+        chapter: "5",
+        topic: "Projektziele",
+        question: "Welche Grössen umfasst das magische Dreieck?",
+        answer: "Leistung, Zeit und Budget."
+      },
+      {
+        id: "PM-05-002",
+        chapter: "5",
+        topic: "Projektabgrenzung",
+        question:
+          "Warum müssen In Scope und Out of Scope geklärt werden?",
+        answer:
+          "Eine klare Abgrenzung verhindert Scope Creep und fokussiert das Projekt auf die Zielerreichung."
+      },
+      {
+        id: "PM-06-001",
+        chapter: "6",
+        topic: "Kick-off",
+        question: "Welche Ziele hat ein Projekt-Kick-off?",
+        answer:
+          "Gemeinsamer Informationsstand, Ziel- und Rollenklärung, Spielregeln, Vorgehen und Motivation."
+      },
+      {
+        id: "PM-07-001",
+        chapter: "7",
+        topic: "Stakeholdermanagement",
+        question: "Was ist eine Stakeholderanalyse?",
+        answer:
+          "Die Stakeholderanalyse erfasst Anspruchsgruppen und bewertet deren Interessen, Einfluss, Haltung und erforderliche Einbindung."
+      }
+    ];
+
+    const riskModules = [
+      {
+        title: "Risikoprozess",
+        items: [
+          [
+            "Identifizieren",
+            "Mögliche Ereignisse, Ursachen und Auswirkungen erfassen."
+          ],
+          [
+            "Analysieren",
+            "Eintrittswahrscheinlichkeit und Schadensausmass beurteilen."
+          ],
+          [
+            "Priorisieren",
+            "Risiken nach ihrer Bedeutung ordnen."
+          ],
+          [
+            "Massnahmen",
+            "Risiken vermeiden, vermindern, übertragen oder akzeptieren."
+          ],
+          [
+            "Verantworten",
+            "Für jedes wichtige Risiko eine verantwortliche Person festlegen."
+          ],
+          [
+            "Überwachen",
+            "Risiken und Massnahmen während des Projekts regelmässig überprüfen."
+          ]
+        ]
+      },
+      {
+        title: "Risikomatrix",
+        items: [
+          ["Niedrig", "Beobachten und dokumentieren."],
+          ["Mittel", "Geeignete Massnahmen prüfen und vorbereiten."],
+          ["Hoch", "Aktiv behandeln und regelmässig überwachen."],
+          ["Kritisch", "Priorisiert behandeln und gegebenenfalls eskalieren."]
+        ]
+      },
+      {
+        title: "Risikostrategien",
+        items: [
+          [
+            "Vermeiden",
+            "Die Ursache so verändern, dass das Risiko nicht mehr besteht."
+          ],
+          [
+            "Vermindern",
+            "Eintrittswahrscheinlichkeit oder Schadensausmass reduzieren."
+          ],
+          [
+            "Übertragen",
+            "Finanzielle oder operative Folgen an Dritte übertragen."
+          ],
+          [
+            "Akzeptieren",
+            "Das Risiko bewusst tragen und gegebenenfalls Reserven vorsehen."
+          ]
+        ]
+      },
+      {
+        title: "Risiko vs. Problem",
+        items: [
+          ["Risiko", "Ein mögliches zukünftiges Ereignis."],
+          ["Problem", "Eine bereits eingetretene Störung."],
+          ["Prävention", "Reduziert ein noch nicht eingetretenes Risiko."],
+          ["Korrektur", "Reagiert auf ein bereits bestehendes Problem."]
+        ]
+      }
+    ];
+
+    const exercises = [
+      {
+        title: "Projekt oder Tagesgeschäft",
+        categories: ["Projekt", "Tagesgeschäft"],
+        items: [
+          ["Zeitlich begrenzt", "Projekt"],
+          ["Wiederkehrende Routine", "Tagesgeschäft"],
+          ["Einmalige Aufgabe", "Projekt"],
+          ["Auf Dauer angelegt", "Tagesgeschäft"],
+          ["Interdisziplinäres Team", "Projekt"],
+          ["Regelmässige Linienarbeit", "Tagesgeschäft"]
+        ]
+      },
+      {
+        title: "Risiko oder Problem",
+        categories: ["Risiko", "Problem"],
+        items: [
+          ["Der Lieferant könnte zu spät liefern", "Risiko"],
+          ["Der Liefertermin wurde bereits verpasst", "Problem"],
+          ["Eine Schlüsselperson könnte ausfallen", "Risiko"],
+          ["Das Budget ist bereits überschritten", "Problem"],
+          ["Eine Gesetzesänderung ist möglich", "Risiko"],
+          ["Der Systemtest ist fehlgeschlagen", "Problem"]
+        ]
+      },
+      {
+        title: "Risikostrategien",
+        categories: [
+          "Vermeiden",
+          "Vermindern",
+          "Übertragen",
+          "Akzeptieren"
+        ],
+        items: [
+          ["Riskante Funktion aus dem Scope entfernen", "Vermeiden"],
+          ["Zusätzlichen Test einplanen", "Vermindern"],
+          ["Versicherung abschliessen", "Übertragen"],
+          ["Kleine Restwirkung bewusst tragen", "Akzeptieren"]
+        ]
+      }
+    ];
+
+    let mode = "cards";
+    let cardIndex = 0;
+    let cardFlipped = false;
+    let selectedAnswer = null;
+
+    let riskIndex = 0;
+    let openedRiskItems = {};
+
+    let exerciseIndex = 0;
+    let assignments = {};
+    let activeExerciseItem = null;
+    let exerciseResult = null;
+
+    let progress = loadProgress();
+
+    const app = document.getElementById("app");
+    const filters = document.getElementById("filters");
+    const searchInput = document.getElementById("search");
+    const chapterSelect = document.getElementById("chapter");
+    const bottomNavigation = document.getElementById("bottomNavigation");
+
+    function loadProgress() {
+      try {
+        return JSON.parse(localStorage.getItem("pm1-progress")) || {
+          cards: 0,
+          quiz: 0,
+          exercises: 0
+        };
+      } catch {
+        return {
+          cards: 0,
+          quiz: 0,
+          exercises: 0
+        };
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem("pm1-progress", JSON.stringify(progress));
+
+      document.getElementById("progressCards").textContent =
+        progress.cards;
+
+      document.getElementById("progressQuiz").textContent =
+        progress.quiz;
+
+      document.getElementById("progressExercises").textContent =
+        progress.exercises;
+
+      const total =
+        progress.cards +
+        progress.quiz +
+        progress.exercises;
+
+      const percentage = Math.min(
+        100,
+        Math.round((total / 30) * 100)
+      );
+
+      document.getElementById("progressBar").style.width =
+        percentage + "%";
+    }
+
+    function resetProgress() {
+      progress = {
+        cards: 0,
+        quiz: 0,
+        exercises: 0
+      };
+
+      saveProgress();
+    }
+
+    function fillChapterSelect() {
+      const chapters = [
+        ...new Set(cards.map(card => card.chapter))
+      ];
+
+      chapterSelect.innerHTML =
+        '<option value="Alle">Alle Kapitel</option>' +
+        chapters
+          .map(chapter => {
+            return `<option value="${chapter}">Kapitel ${chapter}</option>`;
+          })
+          .join("");
+    }
+
+    function getFilteredCards() {
+      const searchTerm = searchInput.value
+        .trim()
+        .toLowerCase();
+
+      const selectedChapter = chapterSelect.value;
+
+      return cards.filter(card => {
+        const chapterMatches =
+          selectedChapter === "Alle" ||
+          card.chapter === selectedChapter;
+
+        const text =
+          `${card.question} ${card.answer} ${card.topic}`
+            .toLowerCase();
+
+        const searchMatches =
+          !searchTerm || text.includes(searchTerm);
+
+        return chapterMatches && searchMatches;
+      });
+    }
+
+    function render() {
+      const learningMode =
+        mode === "cards" || mode === "quiz";
+
+      filters.classList.toggle("hidden", !learningMode);
+      bottomNavigation.classList.toggle(
+        "hidden",
+        !learningMode
+      );
+
+      if (mode === "cards") {
+        renderCards();
+      } else if (mode === "quiz") {
+        renderQuiz();
+      } else if (mode === "risks") {
+        renderRisks();
+      } else if (mode === "exercise") {
+        renderExercise();
+      }
+    }
+
+    function renderCards() {
+      const filteredCards = getFilteredCards();
+
+      if (!filteredCards.length) {
+        app.innerHTML = `
+          <section class="box">
+            Keine Karten gefunden.
+          </section>
+        `;
+        return;
+      }
+
+      cardIndex = Math.min(
+        cardIndex,
+        filteredCards.length - 1
+      );
+
+      const card = filteredCards[cardIndex];
+
+      app.innerHTML = `
+        <section class="box card" onclick="flipCard()">
+          <span class="badge">
+            Kapitel ${card.chapter}
+          </span>
+
+          <p class="muted">${card.topic}</p>
+
+          <small>
+            ${cardFlipped ? "ANTWORT" : "FRAGE"}
+          </small>
+
+          <h2>
+            ${cardFlipped ? card.answer : card.question}
+          </h2>
+
+          <p class="counter">
+            ${cardIndex + 1}/${filteredCards.length}
+            · Tippen zum Umdrehen
+          </p>
+        </section>
+      `;
+    }
+
+    function renderQuiz() {
+      const filteredCards = getFilteredCards();
+
+      if (!filteredCards.length) {
+        app.innerHTML = `
+          <section class="box">
+            Keine Quizfragen gefunden.
+          </section>
+        `;
+        return;
+      }
+
+      cardIndex = Math.min(
+        cardIndex,
+        filteredCards.length - 1
+      );
+
+      const card = filteredCards[cardIndex];
+
+      let wrongAnswers = cards
+        .filter(otherCard => otherCard.id !== card.id)
+        .map(otherCard => otherCard.answer)
+        .slice(0, 3);
+
+      const answerOptions = [
+        card.answer,
+        ...wrongAnswers
+      ].sort(() => Math.random() - 0.5);
+
+      app.innerHTML = `
+        <section class="box">
+          <span class="badge">
+            Quiz · Kapitel ${card.chapter}
+          </span>
+
+          <h2>${card.question}</h2>
+
+          <div class="answers">
+            ${answerOptions
+              .map((answer, index) => {
+                let answerClass = "";
+
+                if (selectedAnswer) {
+                  if (answer === card.answer) {
+                    answerClass = "correct";
+                  } else if (answer === selectedAnswer) {
+                    answerClass = "wrong";
+                  }
+                }
+
+                return `
+                  <button
+                    class="answer ${answerClass}"
+                    ${selectedAnswer ? "disabled" : ""}
+                    onclick='chooseAnswer(${JSON.stringify(answer)})'
+                  >
+                    ${String.fromCharCode(65 + index)}
+                    · ${answer}
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+
+          ${
+            selectedAnswer
+              ? `
+                <p class="muted">
+                  Richtige Antwort: ${card.answer}
+                </p>
+              `
+              : ""
+          }
+        </section>
+      `;
+    }
+
+    function renderRisks() {
+      const module = riskModules[riskIndex];
+
+      app.innerHTML = `
+        <div class="subnav">
+          ${riskModules
+            .map((riskModule, index) => {
+              return `
+                <button
+                  class="${index === riskIndex ? "active" : ""}"
+                  onclick="selectRiskModule(${index})"
+                >
+                  ${riskModule.title}
+                </button>
+              `;
+            })
+            .join("")}
+        </div>
+
+        <section class="box">
+          <span class="badge">Projektrisiken</span>
+          <h2>${module.title}</h2>
+
+          <div class="tiles">
+            ${module.items
+              .map((item, index) => {
+                const opened = openedRiskItems[index];
+
+                return `
+                  <button
+                    class="tile ${opened ? "open" : ""}"
+                    onclick="toggleRiskItem(${index})"
+                  >
+                    <b>${item[0]}</b>
+
+                    <p>
+                      ${
+                        opened
+                          ? item[1]
+                          : "Tippen zum Aufdecken"
+                      }
+                    </p>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderExercise() {
+      const exercise = exercises[exerciseIndex];
+
+      const remainingItems = exercise.items.filter(item => {
+        return !assignments[item[0]];
+      });
+
+      app.innerHTML = `
+        <div class="subnav">
+          ${exercises
+            .map((currentExercise, index) => {
+              return `
+                <button
+                  class="${index === exerciseIndex ? "active" : ""}"
+                  onclick="selectExercise(${index})"
+                >
+                  ${currentExercise.title}
+                </button>
+              `;
+            })
+            .join("")}
+        </div>
+
+        <section class="box">
+          <span class="badge">Zuordnungsübung</span>
+          <h2>${exercise.title}</h2>
+
+          <p class="muted">
+            Begriff antippen und danach das passende Zielfeld antippen.
+          </p>
+
+          <div class="chips">
+            ${remainingItems
+              .map(item => {
+                return `
+                  <button
+                    class="chip ${
+                      activeExerciseItem === item[0]
+                        ? "selected"
+                        : ""
+                    }"
+                    onclick='selectExerciseItem(${JSON.stringify(item[0])})'
+                  >
+                    ${item[0]}
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+
+          <div class="drops">
+            ${exercise.categories
+              .map(category => {
+                const assignedItems = Object.entries(assignments)
+                  .filter(entry => entry[1] === category)
+                  .map(entry => entry[0]);
+
+                return `
+                  <div
+                    class="drop"
+                    onclick='assignExerciseItem(${JSON.stringify(category)})'
+                  >
+                    <b>${category}</b>
+
+                    ${assignedItems
+                      .map(item => {
+                        return `
+                          <div class="assigned">
+                            ${item}
+                          </div>
+                        `;
+                      })
+                      .join("")}
+                  </div>
+                `;
+              })
+              .join("")}
+          </div>
+
+          ${
+            exerciseResult !== null
+              ? `
+                <div class="feedback ${
+                  exerciseResult ? "success" : "error"
+                }">
+                  ${
+                    exerciseResult
+                      ? "Alles richtig zugeordnet."
+                      : "Noch nicht ganz. Prüfe die Zuordnung."
+                  }
+                </div>
+              `
+              : ""
+          }
+
+          <div class="exercise-actions">
+            <button
+              class="action primary"
+              onclick="checkExercise()"
+            >
+              Prüfen
+            </button>
+
+            <button
+              class="action"
+              onclick="resetExercise()"
+            >
+              Zurücksetzen
+            </button>
+          </div>
+        </section>
+      `;
+    }
+
+    function setMode(newMode, clickedButton) {
+      mode = newMode;
+      selectedAnswer = null;
+
+      document
+        .querySelectorAll(".tabs button")
+        .forEach(button => {
+          button.classList.remove("active");
+        });
+
+      clickedButton.classList.add("active");
+      render();
+    }
+
+    function flipCard() {
+      cardFlipped = !cardFlipped;
+
+      if (cardFlipped) {
+        progress.cards += 1;
+        saveProgress();
+      }
+
+      render();
+    }
+
+    function go(direction) {
+      const filteredCards = getFilteredCards();
+
+      if (!filteredCards.length) {
+        return;
+      }
+
+      cardIndex = Math.max(
+        0,
+        Math.min(
+          filteredCards.length - 1,
+          cardIndex + direction
+        )
+      );
+
+      cardFlipped = false;
+      selectedAnswer = null;
+      render();
+    }
+
+    function randomCard() {
+      const filteredCards = getFilteredCards();
+
+      if (!filteredCards.length) {
+        return;
+      }
+
+      cardIndex = Math.floor(
+        Math.random() * filteredCards.length
+      );
+
+      cardFlipped = false;
+      selectedAnswer = null;
+      render();
+    }
+
+    function mainAction() {
+      if (mode === "cards") {
+        flipCard();
+      } else if (mode === "quiz") {
+        randomCard();
+      }
+    }
+
+    function chooseAnswer(answer) {
+      if (selectedAnswer) {
+        return;
+      }
+
+      selectedAnswer = answer;
+
+      const filteredCards = getFilteredCards();
+      const card = filteredCards[cardIndex];
+
+      if (answer === card.answer) {
+        progress.quiz += 1;
+        saveProgress();
+      }
+
+      render();
+    }
+
+    function selectRiskModule(index) {
+      riskIndex = index;
+      openedRiskItems = {};
+      render();
+    }
+
+    function toggleRiskItem(index) {
+      openedRiskItems[index] =
+        !openedRiskItems[index];
+
+      render();
+    }
+
+    function selectExercise(index) {
+      exerciseIndex = index;
+      assignments = {};
+      activeExerciseItem = null;
+      exerciseResult = null;
+      render();
+    }
+
+    function selectExerciseItem(item) {
+      activeExerciseItem = item;
+      exerciseResult = null;
+      render();
+    }
+
+    function assignExerciseItem(category) {
+      if (!activeExerciseItem) {
+        return;
+      }
+
+      assignments[activeExerciseItem] = category;
+      activeExerciseItem = null;
+      exerciseResult = null;
+      render();
+    }
+
+    function checkExercise() {
+      const exercise = exercises[exerciseIndex];
+
+      exerciseResult = exercise.items.every(item => {
+        return assignments[item[0]] === item[1];
+      });
+
+      if (exerciseResult) {
+        progress.exercises += 1;
+        saveProgress();
+      }
+
+      render();
+    }
+
+    function resetExercise() {
+      assignments = {};
+      activeExerciseItem = null;
+      exerciseResult = null;
+      render();
+    }
+
+    document
+      .querySelectorAll(".tabs button")
+      .forEach(button => {
+        button.addEventListener("click", () => {
+          setMode(button.dataset.mode, button);
+        });
+      });
+
+    searchInput.addEventListener("input", () => {
+      cardIndex = 0;
+      cardFlipped = false;
+      selectedAnswer = null;
+      render();
+    });
+
+    chapterSelect.addEventListener("change", () => {
+      cardIndex = 0;
+      cardFlipped = false;
+      selectedAnswer = null;
+      render();
+    });
+
+    fillChapterSelect();
+    saveProgress();
+    render();
+  </script>
+</body>
+</html>
